@@ -13,8 +13,7 @@ rl.oneline('./testfile', 1, function(err, res) {
   console.log(res)	//print content
 })
 ```
-## Next Development
-`rl.readLines(path,rows,callback)`
+`rl.multilines(path,rows,callback)`
 It will read specific lines, and emit an array, if not exist it will contain empty string value. You need to define your path, then define lines that you want to read in array (sorted or unsorted).
 ```
 rl.multilines('./testfile', [1,4], function(err, res) {
@@ -22,3 +21,5 @@ rl.multilines('./testfile', [1,4], function(err, res) {
   console.log(res)	//print content
 })
 ```
+## Next Development
+Feel free to fork and develop by yourself, or [contact me](mailto:ans4175@gmail.com)

@@ -38,6 +38,44 @@ var readl = {
       console.error(err);
       callback(err, content)
     }
+  },
+  multilines: function(path, row, callback) {
+    var i = 0;
+    var lastrow = Math.max.apply(null, row);
+    var content = {};
+    var rs = fs.createReadStream(path, {
+      encoding: 'utf8',
+      autoClose: false
+    }).on('error', function(err) {
+      rs.destroy();
+      callback(err, content)
+    });
+    path = null;
+    try {
+      readline.createInterface({
+        input: rs,
+        terminal: false
+      }).on('line', function(line) {
+        ++i;
+        if (row.indexOf(i) > -1) {
+          try {
+            content[i] = line;
+          } catch (e) {
+            console.error(e);
+          }
+          if (i == lastrow) this.close();
+        }
+      }).on('close', function() {
+        rs.destroy();
+        callback(null, content)
+      }).on('error', function(err) {
+        rs.destroy();
+        callback(err, content)
+      });
+    } catch (err) {
+      console.error(err);
+      callback(err, content)
+    }
   }
 }
 
