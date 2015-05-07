@@ -1,6 +1,6 @@
 {
   "name": "readline-specific",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Node module for read specific line from a file",
   "main": "index.js",
   "scripts": {
