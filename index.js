@@ -76,6 +76,43 @@ var readl = {
       console.error(err);
       callback(err, content)
     }
+  },
+  alllines: function(path, callback) {
+    var i = 0;
+    var content = {};
+    content.all = "";
+    content.row = {};
+    var rs = fs.createReadStream(path, {
+      encoding: 'utf8',
+      autoClose: false
+    }).on('error', function(err) {
+      rs.destroy();
+      callback(err, content)
+    });
+    path = null;
+    try {
+      readline.createInterface({
+        input: rs,
+        terminal: false
+      }).on('line', function(line) {
+        ++i;
+        try {
+          content.row[i] = line;
+          content.all += line + '\r\n';
+        } catch (e) {
+          console.error(e);
+        }
+      }).on('close', function() {
+        rs.destroy();
+        callback(null, content)
+      }).on('error', function(err) {
+        rs.destroy();
+        callback(err, content)
+      });
+    } catch (err) {
+      console.error(err);
+      callback(err, content)
+    }
   }
 }
 
