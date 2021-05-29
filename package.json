@@ -4,7 +4,7 @@
   "description": "Node module for read specific line from a file",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -23,5 +23,8 @@
   "homepage": "https://github.com/ans-4175/readline-specific",
   "dependencies": {
     "fs": "0.0.2"
+  },
+  "devDependencies": {
+    "jest": "^25.5.4"
   }
 }
