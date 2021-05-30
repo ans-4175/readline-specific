@@ -29,7 +29,10 @@ describe('oneline()', function() {
   test('read line after last line', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
-      expect(err).toStrictEqual(null);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('RangeError');
+      expect(err.message).toStrictEqual('Line index to read was not found');
       done();
     }
     rl.oneline(testFilePath, 4, callback);
@@ -38,7 +41,10 @@ describe('oneline()', function() {
   test('read line 0', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
-      expect(err).toStrictEqual(null);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('RangeError');
+      expect(err.message).toStrictEqual('Line index to read must be greater than zero');
       done();
     }
     rl.oneline(testFilePath, 0, callback);
@@ -47,7 +53,10 @@ describe('oneline()', function() {
   test('read line -1', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
-      expect(err).toStrictEqual(null);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('RangeError');
+      expect(err.message).toStrictEqual('Line index to read must be greater than zero');
       done();
     }
     rl.oneline(testFilePath, -1, callback);
@@ -56,7 +65,10 @@ describe('oneline()', function() {
   test('read unavailable line', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
-      expect(err).toStrictEqual(null);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('RangeError');
+      expect(err.message).toStrictEqual('Line index to read was not found');
       done();
     }
     rl.oneline(testFilePath, 100, callback);
@@ -65,7 +77,10 @@ describe('oneline()', function() {
   test('invalid line format (letter)', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
-      expect(err).toStrictEqual(null);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('TypeError');
+      expect(err.message).toStrictEqual('Line index to read must be supplied as integer');
       done();
     }
     rl.oneline(testFilePath, 'a', callback);
@@ -74,7 +89,10 @@ describe('oneline()', function() {
   test('invalid line format (array)', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
-      expect(err).toStrictEqual(null);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('TypeError');
+      expect(err.message).toStrictEqual('Line index to read must be supplied as integer');
       done();
     }
     rl.oneline(testFilePath, ['a'], callback);
