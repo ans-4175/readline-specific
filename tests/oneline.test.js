@@ -1,6 +1,10 @@
 var rl = require('../index.js');
 
 var testFilePath = './tests/file.txt';
+var testBinaryFilePath = './tests/file.zip';
+var testUnavailableFilePath = './tests/unavailable.txt';
+
+var emptyResult = '';
 
 describe('oneline()', function() {
 
@@ -24,7 +28,7 @@ describe('oneline()', function() {
 
   test('read line after last line', function(done) {
     function callback(err, res) {
-      expect(res).toStrictEqual('');
+      expect(res).toStrictEqual(emptyResult);
       expect(err).toStrictEqual(null);
       done();
     }
@@ -33,7 +37,7 @@ describe('oneline()', function() {
 
   test('read line 0', function(done) {
     function callback(err, res) {
-      expect(res).toStrictEqual('');
+      expect(res).toStrictEqual(emptyResult);
       expect(err).toStrictEqual(null);
       done();
     }
@@ -42,7 +46,7 @@ describe('oneline()', function() {
 
   test('read line -1', function(done) {
     function callback(err, res) {
-      expect(res).toStrictEqual('');
+      expect(res).toStrictEqual(emptyResult);
       expect(err).toStrictEqual(null);
       done();
     }
@@ -51,7 +55,7 @@ describe('oneline()', function() {
 
   test('read unavailable line', function(done) {
     function callback(err, res) {
-      expect(res).toStrictEqual('');
+      expect(res).toStrictEqual(emptyResult);
       expect(err).toStrictEqual(null);
       done();
     }
@@ -60,7 +64,7 @@ describe('oneline()', function() {
 
   test('invalid line format (letter)', function(done) {
     function callback(err, res) {
-      expect(res).toStrictEqual('');
+      expect(res).toStrictEqual(emptyResult);
       expect(err).toStrictEqual(null);
       done();
     }
@@ -69,20 +73,38 @@ describe('oneline()', function() {
 
   test('invalid line format (array)', function(done) {
     function callback(err, res) {
-      expect(res).toStrictEqual('');
+      expect(res).toStrictEqual(emptyResult);
       expect(err).toStrictEqual(null);
       done();
     }
     rl.oneline(testFilePath, ['a'], callback);
   });
 
+  test('binary file', function(done) {
+    function callback(err, res) {
+      expect(Buffer.from(res).toString('base64')).toStrictEqual('UEsDBA==');
+      expect(err).toStrictEqual(null);
+      done();
+    }
+    rl.oneline(testBinaryFilePath, 1, callback);
+  });
+
   test('unavailable file', function(done) {
     function callback(err, res) {
-      expect(res).toStrictEqual('');
+      expect(res).toStrictEqual(emptyResult);
       expect(err.message).toStrictEqual(expect.stringMatching(/^ENOENT: no such file or directory, open '.+unavailable.txt'$/));
       done();
     }
-    rl.oneline('./tests/unavailable.txt', 1, callback);
+    rl.oneline(testUnavailableFilePath, 1, callback);
+  });
+
+  test('folder instead of file', function(done) {
+    function callback(err, res) {
+      expect(res).toStrictEqual(emptyResult);
+      expect(err.message).toStrictEqual('EISDIR: illegal operation on a directory, read');
+      done();
+    }
+    rl.oneline('.', 1, callback);
   });
 
 });
