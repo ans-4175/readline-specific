@@ -138,4 +138,16 @@ describe('multilines()', function() {
     rl.multilines('.', [1], callback);
   });
 
+  test('callback is not a function (number)', function() {
+    expect.assertions(4);
+    try {
+      rl.multilines(testFilePath, [1], 1);
+    } catch (err) {
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('TypeError');
+      expect(err.message).toStrictEqual('Callback must be supplied as function');
+    }
+  });
+
 });

@@ -5,6 +5,9 @@ var readl = {
   oneline: function(path, row, callback) {
     var i = 0;
     var content = '';
+    if (!!!(callback && callback.constructor && callback.call && callback.apply)) {
+      throw new TypeError('Callback must be supplied as function');
+    }
     if (typeof row !== 'number' || !Number.isInteger(row)) {
       callback(new TypeError('Line index to read must be supplied as integer'), content);
       return;
@@ -56,6 +59,9 @@ var readl = {
   multilines: function(path, row, callback) {
     var i = 0;
     var content = {};
+    if (!!!(callback && callback.constructor && callback.call && callback.apply)) {
+      throw new TypeError('Callback must be supplied as function');
+    }
     if (!Array.isArray(row) ||
         row.some(singleRow => typeof singleRow !== 'number' || !Number.isInteger(singleRow))) {
       callback(new TypeError('Line indexes to read must be supplied as array of integers'), content);
@@ -111,6 +117,9 @@ var readl = {
     var content = {};
     content.all = "";
     content.row = {};
+    if (!!!(callback && callback.constructor && callback.call && callback.apply)) {
+      throw new TypeError('Callback must be supplied as function');
+    }
     var rs = fs.createReadStream(path, {
       encoding: 'utf8',
       autoClose: false
