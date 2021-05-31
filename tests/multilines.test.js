@@ -6,7 +6,7 @@ var testUnavailableFilePath = './tests/unavailable.txt';
 
 var emptyResult = {};
 
-describe('multilines()', function() {
+describe('multilines() - OK', function() {
 
   test('read first line', function(done) {
     function callback(err, res) {
@@ -50,6 +50,60 @@ describe('multilines()', function() {
     rl.multilines(testFilePath, [3, 1], callback);
   });
 
+  test('binary file', function(done) {
+    function callback(err, res) {
+      expect(res).toHaveProperty('1');
+      expect(Buffer.from(res['1']).toString('base64')).toStrictEqual('UEsDBA==');
+      expect(err).toStrictEqual(null);
+      done();
+    }
+    rl.multilines(testBinaryFilePath, [1], callback);
+  });
+
+});
+
+describe('multilines() - Invalid path parameter', function() {
+
+  test('unavailable file', function(done) {
+    function callback(err, res) {
+      expect(res).toStrictEqual(emptyResult);
+      expect(err.message).toStrictEqual(expect.stringMatching(/^ENOENT: no such file or directory, open '.+unavailable.txt'$/));
+      done();
+    }
+    rl.multilines(testUnavailableFilePath, [1], callback);
+  });
+
+  test('file path as number', function (done) {
+    expect.assertions(4);
+
+    function callback() {
+      done();
+    }
+
+    try {
+      rl.multilines(1, [1], callback);
+    } catch (err) {
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('TypeError');
+      expect(err.message).toStrictEqual(expect.stringMatching(/must be (a|of type) string or/));
+      done();
+    }
+  });
+
+  test('folder instead of file', function(done) {
+    function callback(err, res) {
+      expect(res).toStrictEqual(emptyResult);
+      expect(err.message).toStrictEqual('EISDIR: illegal operation on a directory, read');
+      done();
+    }
+    rl.multilines('.', [1], callback);
+  });
+
+});
+
+describe('multilines() - Invalid row parameter', function() {
+
   test('read unavailable line', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
@@ -74,6 +128,30 @@ describe('multilines()', function() {
     rl.multilines(testFilePath, [1, 100], callback);
   });
 
+  test('read line 0 and line 2', function(done) {
+    function callback(err, res) {
+      expect(res).toStrictEqual(emptyResult);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('RangeError');
+      expect(err.message).toStrictEqual('Line indexes to read must be greater than zero');
+      done();
+    }
+    rl.multilines(testFilePath, [0, 2], callback);
+  });
+
+  test('read line 2 and line 0', function(done) {
+    function callback(err, res) {
+      expect(res).toStrictEqual(emptyResult);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('RangeError');
+      expect(err.message).toStrictEqual('Line indexes to read must be greater than zero');
+      done();
+    }
+    rl.multilines(testFilePath, [2, 0], callback);
+  });
+
   test('invalid line format (letter)', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
@@ -84,6 +162,19 @@ describe('multilines()', function() {
       done();
     }
     rl.multilines(testFilePath, ['a'], callback);
+  });
+
+  test('invalid line format (float)', function (done) {
+    function callback(err, res) {
+      expect(res).toStrictEqual(emptyResult);
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('TypeError');
+      expect(err.message).toStrictEqual('Line indexes to read must be supplied as array of integers');
+      done();
+    }
+
+    rl.multilines(testFilePath, [1.1], callback);
   });
 
   test('invalid line array format (number)', function(done) {
@@ -110,35 +201,11 @@ describe('multilines()', function() {
     rl.multilines(testFilePath, [[]], callback);
   });
 
-  test('binary file', function(done) {
-    function callback(err, res) {
-      expect(res).toHaveProperty('1');
-      expect(Buffer.from(res['1']).toString('base64')).toStrictEqual('UEsDBA==');
-      expect(err).toStrictEqual(null);
-      done();
-    }
-    rl.multilines(testBinaryFilePath, [1], callback);
-  });
+});
 
-  test('unavailable file', function(done) {
-    function callback(err, res) {
-      expect(res).toStrictEqual(emptyResult);
-      expect(err.message).toStrictEqual(expect.stringMatching(/^ENOENT: no such file or directory, open '.+unavailable.txt'$/));
-      done();
-    }
-    rl.multilines(testUnavailableFilePath, [1], callback);
-  });
+describe('multilines() - Invalid callback parameter', function () {
 
-  test('folder instead of file', function(done) {
-    function callback(err, res) {
-      expect(res).toStrictEqual(emptyResult);
-      expect(err.message).toStrictEqual('EISDIR: illegal operation on a directory, read');
-      done();
-    }
-    rl.multilines('.', [1], callback);
-  });
-
-  test('callback is not a function (number)', function() {
+  test('callback is not a function (number)', function () {
     expect.assertions(4);
     try {
       rl.multilines(testFilePath, [1], 1);

@@ -9,7 +9,7 @@ var emptyResult = {
   row: {}
 };
 
-describe('alllines()', function() {
+describe('alllines() - OK', function() {
 
   test('read all lines', function(done) {
     function callback(err, res) {
@@ -52,6 +52,10 @@ describe('alllines()', function() {
     rl.alllines(testBinaryFilePath, callback);
   });
 
+});
+
+describe('alllines() - Invalid path parameter', function() {
+
   test('unavailable file', function(done) {
     function callback(err, res) {
       expect(res).toStrictEqual(emptyResult);
@@ -59,6 +63,24 @@ describe('alllines()', function() {
       done();
     }
     rl.alllines(testUnavailableFilePath, callback);
+  });
+
+  test('file path as number', function (done) {
+    expect.assertions(4);
+
+    function callback() {
+      done();
+    }
+
+    try {
+      rl.alllines(1, callback);
+    } catch (err) {
+      expect(err).toHaveProperty('name');
+      expect(err).toHaveProperty('message');
+      expect(err.name).toStrictEqual('TypeError');
+      expect(err.message).toStrictEqual(expect.stringMatching(/must be (a|of type) string or/));
+      done();
+    }
   });
 
   test('folder instead of file', function(done) {
@@ -70,7 +92,11 @@ describe('alllines()', function() {
     rl.alllines('.', callback);
   });
 
-  test('callback is not a function (number)', function() {
+});
+
+describe('alllines() - Invalid callback parameter', function () {
+
+  test('callback is not a function (number)', function () {
     expect.assertions(4);
     try {
       rl.alllines(testFilePath, 1);

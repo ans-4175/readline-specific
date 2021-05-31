@@ -1,14 +1,27 @@
 var fs = require('fs');
 var readline = require('readline');
 
+/**
+ * Detect whether input variable is a function.
+ *
+ * @param {*} variable
+ *
+ * @returns {boolean}
+ *
+ * @see https://stackoverflow.com/questions/5999998/check-if-a-variable-is-of-function-type
+ */
+function isFunction(variable) {
+  return !!(variable && variable.constructor && variable.call && variable.apply);
+}
+
 var readl = {
   oneline: function(path, row, callback) {
-    var i = 0;
-    var content = '';
-    if (!!!(callback && callback.constructor && callback.call && callback.apply)) {
+    if (!isFunction(callback)) {
       throw new TypeError('Callback must be supplied as function');
     }
-    if (typeof row !== 'number' || !Number.isInteger(row)) {
+    var i = 0;
+    var content = '';
+    if (!Number.isInteger(row)) {
       callback(new TypeError('Line index to read must be supplied as integer'), content);
       return;
     }
@@ -57,13 +70,12 @@ var readl = {
     }
   },
   multilines: function(path, row, callback) {
-    var i = 0;
-    var content = {};
-    if (!!!(callback && callback.constructor && callback.call && callback.apply)) {
+    if (!isFunction(callback)) {
       throw new TypeError('Callback must be supplied as function');
     }
-    if (!Array.isArray(row) ||
-        row.some(singleRow => typeof singleRow !== 'number' || !Number.isInteger(singleRow))) {
+    var i = 0;
+    var content = {};
+    if (!Array.isArray(row) || !row.every(Number.isInteger)) {
       callback(new TypeError('Line indexes to read must be supplied as array of integers'), content);
       return;
     }
@@ -113,13 +125,13 @@ var readl = {
     }
   },
   alllines: function(path, callback) {
+    if (!isFunction(callback)) {
+      throw new TypeError('Callback must be supplied as function');
+    }
     var i = 0;
     var content = {};
     content.all = "";
     content.row = {};
-    if (!!!(callback && callback.constructor && callback.call && callback.apply)) {
-      throw new TypeError('Callback must be supplied as function');
-    }
     var rs = fs.createReadStream(path, {
       encoding: 'utf8',
       autoClose: false
